@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Untuk Clarissa - Dari Zunun</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Georgia, serif;
+  color: white;
+  background: linear-gradient(135deg,
+    #160d25, #39203d, #17172e);
+  overflow-x: hidden;
+  text-align: center;
+}
+
+.container {
+  width: 90%;
+  max-width: 520px;
+  padding: 35px 25px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 25px;
+  background: rgba(255,255,255,.08);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 35px rgba(255,150,200,.15);
+  margin: 30px 0;
+  animation: muncul 2s ease;
+}
+
+h1 {
+  color: #ffd5e5;
+  font-size: 35px;
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  color: #e9c4d7;
+  font-style: italic;
+  margin-bottom: 30px;
+}
+
+.heart {
+  font-size: 48px;
+  animation: detak 1.5s infinite;
+  margin-bottom: 20px;
+}
+
+.message {
+  font-size: 17px;
+  line-height: 1.9;
+  color: #fff1f6;
+  margin: 20px 0;
+}
+
+.highlight {
+  color: #ffc1dc;
+  font-style: italic;
+}
+
+button {
+  background: linear-gradient(135deg,#f7a9ca,#d77ba9);
+  color: #32152a;
+  border: none;
+  padding: 13px 28px;
+  border-radius: 30px;
+  font-size: 15px;
+  cursor: pointer;
+  margin: 10px;
+  transition: .3s;
+}
+
+button:hover {
+  transform: scale(1.07);
+}
+
+.footer {
+  margin-top: 25px;
+  font-size: 15px;
+  color: #f5c9dc;
+  line-height: 1.8;
+}
+
+.star {
+  position: fixed;
+  color: #ffd9e8;
+  animation: jatuh linear infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes detak {
+  50% { transform: scale(1.2); }
+}
+
+@keyframes muncul {
+  from {opacity:0; transform:translateY(25px);}
+  to {opacity:1; transform:translateY(0);}
+}
+
+@keyframes jatuh {
+  from {transform:translateY(-10vh);opacity:0;}
+  20% {opacity:.8;}
+  to {transform:translateY(110vh);opacity:0;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="heart">♡</div>
+
+  <h1>Untuk Clarissa</h1>
+  <p class="subtitle">Sebuah pesan kecil dari Zunun</p>
+
+  <div class="message">
+    hey clarissa
+
+    <br><br>
+
+    Entah seberapa berat hari yang sedang kamu lalui.
+    Tapi aku ingin kamu tahu bahwa tidak apa-apa jika hari ini
+    kamu merasa lelah.
+
+    <br><br>
+
+    Kamu tidak harus selalu terlihat kuat.
+    Tidak harus selalu tersenyum.
+    Ada kalanya kamu harus dimengerti.
+
+    <br><br>
+
+    <span class="highlight">
+    Jangan terlalu keras pada dirimu sendiri.
+    Kamu sudah berusaha sejauh ini,
+    dan itu adalah sesuatu yang patut kamu hargai.
+    </span>
+
+    <br><br>
+
+    Semoga malam ini membawa ketenangan,
+    menghapus sedikit kesedihan,
+    dan memberikan alasan untuk tersenyum kembali.
+
+    <br><br>
+
+    Jika dunia terasa melelahkan,
+    semoga kamu selalu menemukan alasan
+    untuk tetap percaya bahwa hari esok bisa lebih baik.
+  </div>
+
+  <p class="highlight">
+    jika malam ini terasa dingin mungkin sebab aku tidak ada disana,
+    namun rasakan pelukanku dari kejauhan mungkin ini bisa membuatmu merasa hangat.
+  </p>
+
+  <br>
+
+  <button onclick="toggleMusic()" id="musicBtn">
+    ♫ Putar Melodi
+  </button>
+
+  <div class="footer">
+    Dengan keikhlasan hati,<br>
+    <strong>Zunun ♡</strong>
+  </div>
+
+</div>
+
+<script>
+// Membuat bintang jatuh
+for(let i=0; i<25; i++){
+  let star = document.createElement("div");
+  star.className = "star";
+  star.innerHTML = "✦";
+  star.style.left = Math.random()*100 + "vw";
+  star.style.animationDuration = (4+Math.random()*7)+"s";
+  star.style.animationDelay = Math.random()*8+"s";
+  star.style.fontSize = (8+Math.random()*12)+"px";
+  document.body.appendChild(star);
+}
+
+// Instrumen melodi piano orisinal
+let audioContext;
+let musicTimer;
+let playing = false;
+let noteIndex = 0;
+
+const melody = [
+  [261.63, 329.63, 392.00],
+  [293.66, 349.23, 440.00],
+  [261.63, 329.63, 392.00],
+  [220.00, 293.66, 349.23],
+  [246.94, 329.63, 392.00],
+  [196.00, 293.66, 392.00],
+  [220.00, 329.63, 440.00],
+  [261.63, 329.63, 392.00]
+];
+
+function playNote(freq, duration) {
+  const osc = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+
+  osc.type = "sine";
+  osc.frequency.value = freq;
+
+  gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+  gain.gain.exponentialRampToValueAtTime(
+    0.12, audioContext.currentTime + 0.04
+  );
+  gain.gain.exponentialRampToValueAtTime(
+    0.0001, audioContext.currentTime + duration
+  );
+
+  osc.connect(gain);
+  gain.connect(audioContext.destination);
+
+  osc.start();
+  osc.stop(audioContext.currentTime + duration);
+}
+
+function playMelody() {
+  if(!playing) return;
+
+  const notes = melody[noteIndex % melody.length];
+
+  notes.forEach((freq, i) => {
+    setTimeout(() => {
+      if(playing) playNote(freq, 2.5);
+    }, i * 160);
+  });
+
+  noteIndex++;
+  musicTimer = setTimeout(playMelody, 1900);
+}
+
+async function toggleMusic() {
+  const btn = document.getElementById("musicBtn");
+
+  if(!audioContext){
+    audioContext = new (
+      window.AudioContext || window.webkitAudioContext
+    )();
+  }
+
+  if(audioContext.state === "suspended"){
+    await audioContext.resume();
+  }
+
+  playing = !playing;
+
+  if(playing){
+    btn.innerHTML = "Ⅱ Hentikan Melodi";
+    playMelody();
+  } else {
+    clearTimeout(musicTimer);
+    btn.innerHTML = "♫ Putar Melodi";
+  }
+}
+</script>
+
+</body>
+</html>
